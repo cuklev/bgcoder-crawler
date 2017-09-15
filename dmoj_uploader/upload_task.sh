@@ -1,7 +1,6 @@
 #!/bin/bash
 
 DMOJ_URL="http://testjudge.telerikacademy.com"
-ADD_TASK_URL="$DMOJ_URL/admin/judge/problem/add/"
 
 COOKIE_JAR="cookie-jar"
 
