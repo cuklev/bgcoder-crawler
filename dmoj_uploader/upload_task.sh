@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DMOJ_URL="http://testjudge.telerikacademy.com"
+DMOJ_URL="${1:-http://testjudge.telerikacademy.com}"
 
 COOKIE_JAR="cookie-jar"
 
