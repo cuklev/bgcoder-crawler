@@ -40,6 +40,8 @@ for(const i in contestsKendo) {
 	const id = contest.Id;
 
 	if(id === 322 || id === 168 || id === 167 || id === 166) {
+		// Empty contests
+		// HARDcoded skip :D
 		continue;
 	}
 
