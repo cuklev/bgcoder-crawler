@@ -37,7 +37,7 @@ add_group() {
 		| sed -r -n "/name='csrfmiddlewaretoken'/s/.*value='([^']*).*/\1/p")
 
 	curl -s "$url" \
-		-b "$COOKIE_JAR" -c "$COOKIE_JAR" \
+		-b "$COOKIE_JAR" \
 		--compressed \
 		--form "csrfmiddlewaretoken=$csrf" \
 		--form "name=$id" \
@@ -55,7 +55,7 @@ add_type() {
 		| sed -r -n "/name='csrfmiddlewaretoken'/s/.*value='([^']*).*/\1/p")
 
 	curl -s "$url" \
-		-b "$COOKIE_JAR" -c "$COOKIE_JAR" \
+		-b "$COOKIE_JAR" \
 		--compressed \
 		--form "csrfmiddlewaretoken=$csrf" \
 		--form "name=$id" \
@@ -78,7 +78,7 @@ add_problem() {
 		| sed -r -n "/name='csrfmiddlewaretoken'/s/.*value='([^']*).*/\1/p")
 
 	curl -s "$url" \
-		-b "$COOKIE_JAR" -c "$COOKIE_JAR" \
+		-b "$COOKIE_JAR" \
 		--compressed \
 		--form "csrfmiddlewaretoken=$csrf" \
 		--form "code=$id" \
