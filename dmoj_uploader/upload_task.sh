@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DMOJ_URL="${1:-http://testjudge.telerikacademy.com}"
+DMOJ_URL="${1:-http://localhost:8081}"
 
 COOKIE_JAR="cookie-jar"
 
@@ -161,6 +161,8 @@ add_problem() {
 }
 
 [[ -f "$COOKIE_JAR" ]] || auth
+
+exit
 
 add_problem autotest "Auto test" 'Multiline
 кирилица'
