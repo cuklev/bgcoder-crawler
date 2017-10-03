@@ -17,7 +17,7 @@ esac
 CSRF_SCRIPT="$(dirname "$0")/csrf.sh"
 csrf="$("$CSRF_SCRIPT" "$URL" "$COOKIE_JAR")"
 
-curl "$URL" \
+curl -s "$URL" \
 	-b "$COOKIE_JAR" \
 	--compressed \
 	--form "csrfmiddlewaretoken=$csrf" \
