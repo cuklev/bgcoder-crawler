@@ -33,5 +33,6 @@ function parseIDs(output) {
 	return result;
 }
 
-const groupIdMap = parseIDs(spawnSync(files.listScript, [files.cookieJar, 'group'], {encoding: 'utf-8'}).output[1]);
-const typeIdMap = parseIDs(spawnSync(files.listScript, [files.cookieJar, 'type'], {encoding: 'utf-8'}).output[1]);
+const [groupIdMap, typeIdMap] = ['group', 'type']
+	.map(x => spawnSync(files.listScript, [files.cookieJar, x], {encoding: 'utf-8'}))
+	.map(x => parseIDs(x.output[1]));
