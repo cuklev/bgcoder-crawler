@@ -4,15 +4,34 @@
 'use strict';
 
 const fs = require('fs');
-const {execSync, spawnSync} = require('child_process');
+const {spawnSync} = require('child_process');
 
-const stageFiles = Object.freeze({
+const files = Object.freeze({
 	cookieJar: './cookie-jar',
+	authScript: './scripts/auth.sh',
+	addGroupTypeScript: './scripts/add_group_type.sh',
+	addProblemScript: './scripts/add_problem.sh',
+	listScript: './scripts/list_group_type.sh',
 });
 
-const runStage = (() => {
-	const attachIO = {stdio: [0, 1, 2]};
-	return (target, [cmd, ...args]) => fs.existsSync(target) || spawnSync(cmd, args, attachIO);
-})();
 
-runStage(stageFiles.cookieJar, ['./scripts/auth.sh', stageFiles.cookieJar]);
+// authentication
+fs.existsSync(files.cookieJar) || spawnSync(files.authScript, files.cookieJar, {stdio: [0, 1, 2]});
+
+
+// add groups and types
+// here
+
+function parseIDs(output) {
+	const result = new Map;
+
+	output.split('\n')
+		.map(x => x.split(/:/))
+		.forEach(([id, name]) => result.set(name, id));
+
+	result.delete();
+	return result;
+}
+
+const groupIdMap = parseIDs(spawnSync(files.listScript, [files.cookieJar, 'group'], {encoding: 'utf-8'}).output[1]);
+const typeIdMap = parseIDs(spawnSync(files.listScript, [files.cookieJar, 'type'], {encoding: 'utf-8'}).output[1]);
