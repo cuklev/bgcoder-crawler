@@ -1,10 +1,11 @@
 #!/bin/bash
 
-DMOJ_URL="$1"
-COOKIE_JAR="$2"
-ID="$3"
-NAME="$4"
-GROUP_OR_TYPE="$5"
+COOKIE_JAR="$1"
+ID="$2"
+NAME="$3"
+GROUP_OR_TYPE="$4"
+
+[[ ${DMOJ_URL:="http://localhost:8081"} ]]
 
 case "$GROUP_OR_TYPE" in
 	group) URL="$DMOJ_URL/admin/judge/problemgroup/add/" ;;
