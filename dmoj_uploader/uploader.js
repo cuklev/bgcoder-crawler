@@ -7,7 +7,7 @@ const fs = require('fs');
 const {execSync, spawnSync} = require('child_process');
 
 const stageFiles = Object.freeze({
-	cookieJar: 'downloaded/cookie-jar',
+	cookieJar: './cookie-jar',
 });
 
 const runStage = (() => {
