@@ -15,12 +15,12 @@ case "$GROUP_OR_TYPE" in
 esac
 
 CSRF_SCRIPT="$(dirname "$0")/csrf.sh"
-csrf="$("$CSRF_SCRIPT" "$LOGIN_URL" "$COOKIE_JAR")"
+csrf="$("$CSRF_SCRIPT" "$URL" "$COOKIE_JAR")"
 
-curl -s "$url" \
+curl "$URL" \
 	-b "$COOKIE_JAR" \
 	--compressed \
 	--form "csrfmiddlewaretoken=$csrf" \
-	--form "name=$id" \
-	--form "full_name=$name" \
+	--form "name=$ID" \
+	--form "full_name=$NAME" \
 	--form "_save="

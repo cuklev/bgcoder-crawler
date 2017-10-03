@@ -15,7 +15,7 @@ MEMORY_LIMIT="$8"
 URL="$DMOJ_URL/admin/judge/problem/add/"
 
 CSRF_SCRIPT="$(dirname "$0")/csrf.sh"
-csrf="$("$CSRF_SCRIPT" "$LOGIN_URL" "$COOKIE_JAR")"
+csrf="$("$CSRF_SCRIPT" "$URL" "$COOKIE_JAR")"
 
 curl -s "$URL" \
 	-b "$COOKIE_JAR" \
