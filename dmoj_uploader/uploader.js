@@ -22,7 +22,7 @@ fs.existsSync(files.cookieJar) || spawnSync(files.authScript, files.cookieJar, {
 // add groups and types
 // here
 
-function parseIDs(output) {
+function idParser(output) {
 	const result = new Map;
 
 	output.split('\n')
@@ -35,4 +35,15 @@ function parseIDs(output) {
 
 const [groupIdMap, typeIdMap] = ['group', 'type']
 	.map(x => spawnSync(files.listScript, [files.cookieJar, x], {encoding: 'utf-8'}))
-	.map(x => parseIDs(x.output[1]));
+	.map(x => idParser(x.output[1]));
+
+function paramParser(output) {
+	const result = new Map;
+
+	output.split('\n')
+		.map(x => x.split(/:/))
+		.forEach(([param, value]) => result.set(param, value));
+
+	result.delete();
+	return result;
+}
