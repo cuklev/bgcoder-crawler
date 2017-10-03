@@ -6,11 +6,11 @@ ID="$3"
 NAME="$4"
 GROUP_OR_TYPE="$5"
 
-case "$GROUP_OR_TYPE"
+case "$GROUP_OR_TYPE" in
 	group) URL="$DMOJ_URL/admin/judge/problemgroup/add/" ;;
 	type) URL="$DMOJ_URL/admin/judge/problemtype/add/" ;;
 	*)
-		echo Specify group or type
+		echo "Specify group or type."
 		exit 1 ;;
 esac
 
