@@ -6,9 +6,8 @@ DESCRIPTION="$3"
 POINTS="$4"
 TIME_LIMIT="$5"
 MEMORY_LIMIT="$6"
-
-# Group?
-# Types...?
+GROUP_ID="$7"
+TYPE_IDS="$8"
 
 [[ ${DMOJ_URL:="http://localhost:8081"} ]]
 [[ ${COOKIE_JAR:="cookie-jar"} ]]
@@ -32,8 +31,10 @@ curl -s "$URL" \
 	--form "license=" \
 	--form "og_image=" \
 	--form "summary=" \
-	--form "types=1" \
-	--form "group=1" \
+	$(for tid in $TYPE_IDS; do
+		echo "--form types=$tid"
+	done) \
+	--form "group=$GROUP_ID" \
 	--form "points=$POINTS" \
 	--form "partial=on" \
 	--form "time_limit=$TIME_LIMIT" \

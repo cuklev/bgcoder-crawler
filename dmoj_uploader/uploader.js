@@ -84,7 +84,6 @@ const base = '../bgcoder/downloaded/contests';
 //			.join('');
 
 		// do upload here
-		const problemName = problemParams.get('Name');
 
 		spawnSync(files.addProblemScript, [
 				`bgcoder${contestId}p${problemParams.get('Id')}`,   // problem id
@@ -93,8 +92,8 @@ const base = '../bgcoder/downloaded/contests';
 				problemParams.get('MaximumPoints'),                 // points
 				(problemParams.get('TimeLimit') / 1000) + '',       // time limit ms
 				(problemParams.get('MemoryLimit') / 1024 | 0) + '', // memory limit KB
-				// Group?
-				// Types...?
+				'1',                                                // group id
+				'1 2',                                              // type ids
 			]);
 	});
 
