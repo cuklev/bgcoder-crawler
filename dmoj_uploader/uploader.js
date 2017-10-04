@@ -62,7 +62,10 @@ function* getAllFilesRecursive(dir, file = '') {
 	}
 }
 
-[...getAllFilesRecursive('../bgcoder/downloaded/contests')]
+const categoryMap = require('./categoryMap');
+
+const base = '../bgcoder/downloaded/contests';
+[...getAllFilesRecursive(base)]
 	.filter(x => x.file === 'problem.params')
 	.forEach(x => {
 		const paramsFile = path.join(x.dir, x.file);
@@ -71,6 +74,13 @@ function* getAllFilesRecursive(dir, file = '') {
 		const problemParams = paramParser(fs.readFileSync(paramsFile, UTF8));
 		const problemResources = paramParser(fs.readFileSync(resourcesFile, UTF8));
 
+//		const categories = x.dir
+//			.substring(base.length + 1) // remove base
+//			.split(/\//g)
+//			.map(categoryMap.map)
+//			.join('');
+
 		// do upload here
-		console.log(problemParams);
 	});
+
+console.log(categoryMap.failed);
