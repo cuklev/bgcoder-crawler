@@ -67,7 +67,9 @@ const categoryMap = require('./categoryMap');
 const base = '../bgcoder/downloaded/contests';
 [...getAllFilesRecursive(base)]
 	.filter(x => x.file === 'problem.params')
-	.forEach(x => {
+	.forEach((x, index, all) => {
+		console.log(`Uploading ${index + 1}/${all.length}`);
+
 		const paramsFile = path.join(x.dir, x.file);
 		const resourcesFile = path.join(x.dir, 'resources.list');
 
@@ -82,8 +84,20 @@ const base = '../bgcoder/downloaded/contests';
 //			.join('');
 
 		// do upload here
-		const problemId = `bgcoder${contestId}p${problemParams.get('Id')}`;
 		const problemName = problemParams.get('Name');
+
+		spawnSync(files.addProblemScript, [
+				`bgcoder${contestId}p${problemParams.get('Id')}`,   // problem id
+				problemParams.get('Name'),                          // problem name
+				'description',                                      // description
+				problemParams.get('MaximumPoints'),                 // points
+				(problemParams.get('TimeLimit') / 1000) + '',       // time limit ms
+				(problemParams.get('MemoryLimit') / 1024 | 0) + '', // memory limit KB
+				// Group?
+				// Types...?
+			]);
 	});
 
-console.log(categoryMap.failed);
+
+// for DEBUGging
+// console.log(categoryMap.failed);

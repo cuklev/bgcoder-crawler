@@ -33,7 +33,6 @@ curl -s "$URL" \
 	--form "og_image=" \
 	--form "summary=" \
 	--form "types=1" \
-	--form "types=2" \
 	--form "group=1" \
 	--form "points=$POINTS" \
 	--form "partial=on" \
