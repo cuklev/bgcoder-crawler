@@ -1,17 +1,17 @@
 #!/bin/bash
 
-COOKIE_JAR="$1"
-ID="$2"
-NAME="$3"
-DESCRIPTION="$4"
-POINTS="$5"
-TIME_LIMIT="$6"
-MEMORY_LIMIT="$7"
+ID="$1"
+NAME="$2"
+DESCRIPTION="$3"
+POINTS="$4"
+TIME_LIMIT="$5"
+MEMORY_LIMIT="$6"
 
 # Group?
 # Types...?
 
 [[ ${DMOJ_URL:="http://localhost:8081"} ]]
+[[ ${COOKIE_JAR:="cookie-jar"} ]]
 
 URL="$DMOJ_URL/admin/judge/problem/add/"
 

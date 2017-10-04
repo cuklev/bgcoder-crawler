@@ -1,8 +1,7 @@
 #!/bin/bash
 
-COOKIE_JAR="$1"
-
 [[ ${DMOJ_URL:="http://localhost:8081"} ]]
+[[ ${COOKIE_JAR:="cookie-jar"} ]]
 LOGIN_URL="$DMOJ_URL/accounts/login/?next=/"
 
 printf "Username: "

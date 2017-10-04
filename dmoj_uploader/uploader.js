@@ -17,7 +17,7 @@ const files = Object.freeze({
 
 
 // authentication
-fs.existsSync(files.cookieJar) || spawnSync(files.authScript, files.cookieJar, {stdio: [0, 1, 2]});
+fs.existsSync(files.cookieJar) || spawnSync(files.authScript, [], {stdio: [0, 1, 2]});
 
 
 // add groups and types
@@ -36,7 +36,7 @@ function idParser(output) {
 
 const UTF8 = Object.freeze({encoding: 'utf-8'});
 const [groupIdMap, typeIdMap] = ['group', 'type']
-	.map(x => spawnSync(files.listScript, [files.cookieJar, x], UTF8))
+	.map(x => spawnSync(files.listScript, [x], UTF8))
 	.map(x => idParser(x.output[1]));
 
 function paramParser(output) {
@@ -71,6 +71,7 @@ const base = '../bgcoder/downloaded/contests';
 		const paramsFile = path.join(x.dir, x.file);
 		const resourcesFile = path.join(x.dir, 'resources.list');
 
+		const contestId = paramParser(fs.readFileSync(path.join(x.dir, '..', 'contest.params'), UTF8)).get('Id'); // Ugly
 		const problemParams = paramParser(fs.readFileSync(paramsFile, UTF8));
 		const problemResources = paramParser(fs.readFileSync(resourcesFile, UTF8));
 
@@ -81,6 +82,8 @@ const base = '../bgcoder/downloaded/contests';
 //			.join('');
 
 		// do upload here
+		const problemId = `bgcoder${contestId}p${problemParams.get('Id')}`;
+		const problemName = problemParams.get('Name');
 	});
 
 console.log(categoryMap.failed);
