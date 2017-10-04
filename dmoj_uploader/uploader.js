@@ -4,6 +4,7 @@
 'use strict';
 
 const fs = require('fs');
+const path = require('path');
 const {spawnSync} = require('child_process');
 
 const files = Object.freeze({
@@ -33,8 +34,9 @@ function idParser(output) {
 	return result;
 }
 
+const UTF8 = Object.freeze({encoding: 'utf-8'});
 const [groupIdMap, typeIdMap] = ['group', 'type']
-	.map(x => spawnSync(files.listScript, [files.cookieJar, x], {encoding: 'utf-8'}))
+	.map(x => spawnSync(files.listScript, [files.cookieJar, x], UTF8))
 	.map(x => idParser(x.output[1]));
 
 function paramParser(output) {
@@ -47,3 +49,28 @@ function paramParser(output) {
 	result.delete();
 	return result;
 }
+
+function* getAllFilesRecursive(dir, file = '') {
+	const fullName = path.join(dir, file);
+
+	if(fs.statSync(fullName).isDirectory()) {
+		for(const x of fs.readdirSync(fullName)) {
+			yield* getAllFilesRecursive(fullName, x);
+		}
+	} else {
+		yield { dir, file };
+	}
+}
+
+[...getAllFilesRecursive('../bgcoder/downloaded/contests')]
+	.filter(x => x.file === 'problem.params')
+	.forEach(x => {
+		const paramsFile = path.join(x.dir, x.file);
+		const resourcesFile = path.join(x.dir, 'resources.list');
+
+		const problemParams = paramParser(fs.readFileSync(paramsFile, UTF8));
+		const problemResources = paramParser(fs.readFileSync(resourcesFile, UTF8));
+
+		// do upload here
+		console.log(problemParams);
+	});
