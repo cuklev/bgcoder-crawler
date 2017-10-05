@@ -1,8 +1,8 @@
 #!/bin/bash
 
-COOKIE_JAR="$1"
-KENDO_FILE="$2"
+KENDO_FILE="$1"
 
+[[ ${COOKIE_JAR:="cookie-jar"} ]]
 [[ ${OJS_URL:="http://bgcoder.com"} ]]
 
 url="$OJS_URL/Administration/Contests/Read"

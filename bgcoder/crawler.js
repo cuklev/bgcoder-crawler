@@ -1,36 +1,48 @@
 // This is free and unencumbered software released into the public domain.
 // See LICENSE
 
+'use strict';
+
 const fs = require('fs');
 const {execSync, spawnSync} = require('child_process');
 
-const stageFiles = {
-	cookieJar: 'downloaded/cookie-jar',
+const childEnv = Object.freeze({
+	env: {
+		COOKIE_JAR: process.env.COOKIE_JAR || 'downloaded/cookie-jar',
+		OJS_URL: process.env.OJS_URL || 'http://bgcoder.com',
+	}
+});
+
+const stageFiles = Object.freeze({
+	cookieJar: childEnv.env.COOKIE_JAR,
 	contestsJson: 'downloaded/kendo-contests.json',
 	problemsInContestDir: 'downloaded/problems-in-contest',
 	contestsDir: 'downloaded/contests',
-};
+});
 
 const runStage = (() => {
-	const attachIO = {stdio: [0, 1, 2]};
-	return (target, [cmd, ...args]) => fs.existsSync(target) || spawnSync(cmd, args, attachIO);
+	const options = {
+		stdio: [0, 1, 2],
+		env: childEnv.env,
+	};
+	return (target, [cmd, ...args]) => fs.existsSync(target) || spawnSync(cmd, args, options);
 })();
 
-runStage(stageFiles.cookieJar, ['./scripts/auth.sh', stageFiles.cookieJar]);
+runStage(stageFiles.cookieJar, ['./scripts/auth.sh']);
 
 const categoryPath = new Map;
 (function sub(path, id) {
-	console.log(`Category ${id} (${path})`);
-	let cmd = `./scripts/get_subcategories.sh ${stageFiles.cookieJar}`;
+	console.log(`Category ${id || '(none)'} (${path})`);
+	let cmd = `./scripts/get_subcategories.sh`;
 	if(typeof id === 'number') {
 		cmd = `${cmd} ${id}`;
 		categoryPath.set(id, path);
 	}
-	JSON.parse(execSync(cmd).toString())
+	JSON.parse(execSync(cmd, childEnv).toString())
 		.forEach(cat => sub(`${path}/${cat.Name.replace(/\//g, '_')}`, cat.id));
 })('.');
 
-runStage(stageFiles.contestsJson, ['./scripts/get_json_contests.sh', stageFiles.cookieJar, stageFiles.contestsJson]);
+runStage(stageFiles.contestsJson, ['./scripts/get_json_contests.sh', stageFiles.contestsJson]);
 
 const contestsKendo = JSON.parse(fs.readFileSync(stageFiles.contestsJson, 'utf-8')).Data;
 const contestsCount = contestsKendo.length;
@@ -51,7 +63,7 @@ for(const i in contestsKendo) {
 	const filename = `${stageFiles.problemsInContestDir}/${id}.json`;
 
 	console.log(`Contest ${+i + 1}/${contestsCount} - ${id} (${name})`);
-	runStage(filename, ['./scripts/get_json_problems.sh', stageFiles.cookieJar, id, filename]);
+	runStage(filename, ['./scripts/get_json_problems.sh', id, filename]);
 	const problemsKendo = JSON.parse(fs.readFileSync(filename, 'utf-8'));
 	for(const problem of problemsKendo) {
 		const id = problem.Id;
@@ -61,15 +73,15 @@ for(const i in contestsKendo) {
 		const tests = `${problemDir}/tests.zip`;
 
 		console.log(`- ${id} (${name})`);
-		runStage(tests, ['./scripts/download_tests.sh', stageFiles.cookieJar, id, tests]);
+		runStage(tests, ['./scripts/download_tests.sh', id, tests]);
 
 		const resourcesList = `${problemDir}/resources.list`;
 		if(!fs.existsSync(resourcesList)) {
 			fs.writeFileSync(
 				resourcesList,
-				JSON.parse(execSync(`./scripts/get_resources_json.sh ${stageFiles.cookieJar} ${id}`))
+				JSON.parse(execSync(`./scripts/get_resources_json.sh ${id}`, childEnv))
 					.Data
-					.map(({Id, Link, Name}) => `${Name}:` + (Link ? Link : `http://bgcoder.com/Administration/Resources/Download/${Id}`))
+					.map(({Id, Link, Name}) => `${Name}:` + (Link ? Link : `${childEnv.env.OJS_URL}/Administration/Resources/Download/${Id}`))
 					.concat('')
 					.join('\n'));
 		}

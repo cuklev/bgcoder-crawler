@@ -1,8 +1,5 @@
 #!/bin/bash
 
-COOKIE_JAR="$1"
-
-[[ ${OJS_URL:="http://bgcoder.com"} ]]
 LOGIN_URL="$OJS_URL/Account/Login"
 
 get_request_verification_token() {

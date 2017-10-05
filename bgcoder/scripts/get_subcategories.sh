@@ -1,10 +1,6 @@
 #!/bin/bash
 
-COOKIE_JAR="$1"
-ID="$2"
-
-[[ ${OJS_URL:="http://bgcoder.com"} ]]
-
+ID="$1"
 URL="$OJS_URL/Administration/ContestCategories/ReadCategories"
 
 if [[ "$ID" != "" ]]; then
