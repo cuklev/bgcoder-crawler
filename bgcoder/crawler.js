@@ -13,7 +13,6 @@ function absolutePath(...args) {
 }
 
 const stageFiles = Object.freeze({
-	cookieJar: absolutePath('downloaded', 'cookie-jar'),
 	categories: absolutePath('downloaded', 'categories'),
 	contestsJson: absolutePath('downloaded', 'kendo-contests.json'),
 	problemsInContestDir: absolutePath('downloaded', 'problems-in-contest'),
@@ -32,7 +31,7 @@ const scriptFiles = Object.freeze({
 
 const childOptions = Object.freeze({
 	env: {
-		COOKIE_JAR: process.env.COOKIE_JAR || stageFiles.cookieJar,
+		COOKIE_JAR: process.env.COOKIE_JAR || absolutePath('downloaded', 'cookie-jar'),
 		OJS_URL: process.env.OJS_URL || 'http://bgcoder.com',
 	}
 });
@@ -42,10 +41,11 @@ const runStage = (() => {
 		stdio: [0, 1, 2],
 		env: childOptions.env,
 	};
-	return (target, [cmd, ...args]) => fs.existsSync(target) || spawnSync(cmd, args, options);
+	return (cmd, ...args) => spawnSync(cmd, args, options);
 })();
 
-runStage(stageFiles.cookieJar, [scriptFiles.auth]);
+console.log('Authenticating...');
+runStage(scriptFiles.auth);
 
 const categoryPath = new Map;
 if(!fs.existsSync(stageFiles.categories)) {
@@ -73,7 +73,8 @@ if(!fs.existsSync(stageFiles.categories)) {
 		.forEach(([id, path]) => id && categoryPath.set(+id, path));
 }
 
-runStage(stageFiles.contestsJson, [scriptFiles.getJsonContests, stageFiles.contestsJson]);
+console.log('Downloading contests JSON');
+runStage(scriptFiles.getJsonContests, stageFiles.contestsJson);
 
 const contestsKendo = JSON.parse(fs.readFileSync(stageFiles.contestsJson, 'utf-8')).Data;
 const contestsCount = contestsKendo.length;
@@ -94,7 +95,7 @@ for(const i in contestsKendo) {
 	const filename = path.join(stageFiles.problemsInContestDir, `${id}.json`);
 
 	console.log(`Contest ${+i + 1}/${contestsCount} - ${id} (${name})`);
-	runStage(filename, [scriptFiles.getJsonProblems, id, filename]);
+	runStage(scriptFiles.getJsonProblems, id, filename);
 	const problemsKendo = JSON.parse(fs.readFileSync(filename, 'utf-8'));
 	for(const problem of problemsKendo) {
 		const id = problem.Id;
@@ -104,7 +105,7 @@ for(const i in contestsKendo) {
 		const tests = path.join(problemDir, 'tests.zip');
 
 		console.log(`- ${id} (${name})`);
-		runStage(tests, [scriptFiles.downloadTests, id, tests]);
+		runStage(scriptFiles.downloadTests, id, tests);
 
 		const resourcesDir = path.join(problemDir, 'resources');
 		if(!fs.existsSync(resourcesDir)) {
