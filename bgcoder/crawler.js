@@ -22,6 +22,7 @@ const stageFiles = Object.freeze({
 const scriptFiles = Object.freeze({
 	auth: absolutePath('scripts', 'auth.sh'),
 	getSubcategories: absolutePath('scripts', 'get_subcategories.sh'),
+	getHiddenCategories: absolutePath('scripts', 'get_hidden_categories.sh'),
 	getJsonContests: absolutePath('scripts', 'get_json_contests.sh'),
 	getJsonProblems: absolutePath('scripts', 'get_json_problems.sh'),
 	getJsonResources: absolutePath('scripts', 'get_json_resources.sh'),
@@ -53,12 +54,20 @@ if(!fs.existsSync(stageFiles.categories)) {
 			.forEach(cat => sub(`${path}/${cat.Name.replace(/\//g, '_')}`, cat.id));
 	})('.');
 
+	// There is a hidden category
+	JSON.parse(spawnSync(scriptFiles.getHiddenCategories, [], childOptions).stdout)
+		.Data
+		.forEach(({Id, Name}) => {
+			console.log(`Category ${Id} (${Name})`);
+			categoryPath.set(Id, Name)
+		});
+
 	// Save categories
 	fs.writeFileSync(stageFiles.categories, [...categoryPath.entries()]
 			.map(([id, path]) => `${id}:${path}`)
 			.join('\n'));
 } else {
-	console.log('Loading saved categories');
+	console.log('Loading saved categories...');
 
 	fs.readFileSync(stageFiles.categories, 'utf-8')
 		.split('\n')
@@ -66,7 +75,7 @@ if(!fs.existsSync(stageFiles.categories)) {
 		.forEach(([id, path]) => id && categoryPath.set(+id, path));
 }
 
-console.log('Downloading contests JSON');
+console.log('Downloading contests JSON...');
 spawnSync(scriptFiles.getJsonContests, [stageFiles.contestsJson], childOptions);
 
 const contestsKendo = JSON.parse(fs.readFileSync(stageFiles.contestsJson, 'utf-8')).Data;
