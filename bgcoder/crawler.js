@@ -107,6 +107,9 @@ for(const i in contestsKendo) {
 		runStage(tests, [scriptFiles.downloadTests, id, tests]);
 
 		const resourcesDir = path.join(problemDir, 'resources');
+		if(!fs.existsSync(resourcesDir)) {
+			fs.mkdirSync(resourcesDir);
+		}
 		JSON.parse(spawnSync(scriptFiles.getJsonResources, [id.toString()], childOptions).stdout)
 			.Data
 			.forEach(({Id, Link, Name}) => {
