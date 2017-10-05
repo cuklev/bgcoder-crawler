@@ -76,7 +76,7 @@ if(!fs.existsSync(stageFiles.categories)) {
 }
 
 console.log('Downloading contests JSON...');
-spawnSync(scriptFiles.getJsonContests, [stageFiles.contestsJson], childOptions);
+fs.existsSync(stageFile.contestsJson) || spawnSync(scriptFiles.getJsonContests, [stageFiles.contestsJson], childOptions);
 
 const contestsKendo = JSON.parse(fs.readFileSync(stageFiles.contestsJson, 'utf-8')).Data;
 const contestsCount = contestsKendo.length;
@@ -97,22 +97,20 @@ for(const i in contestsKendo) {
 	const filename = path.join(stageFiles.problemsInContestDir, `${id}.json`);
 
 	console.log(`Contest ${+i + 1}/${contestsCount} - ${id} (${name})`);
-	spawnSync(scriptFiles.getJsonProblems, [id, filename], childOptions);
+	fs.existsSync(filename) || spawnSync(scriptFiles.getJsonProblems, [id, filename], childOptions);
 	const problemsKendo = JSON.parse(fs.readFileSync(filename, 'utf-8'));
 	for(const problem of problemsKendo) {
 		const id = problem.Id;
 		problem.Name = problem.Name.replace(/\//g, '_');
 		const name = problem.Name;
 		const problemDir = path.join(contestDir, name);
-		const tests = path.join(problemDir, 'tests.zip');
+		const testsZip = path.join(problemDir, 'tests.zip');
 
 		console.log(`- ${id} (${name})`);
-		spawnSync(scriptFiles.downloadTests, [id, tests], childOptions);
+		fs.existsSync(testsZip) || spawnSync(scriptFiles.downloadTests, [id, testsZip], childOptions);
 
 		const resourcesDir = path.join(problemDir, 'resources');
-		if(!fs.existsSync(resourcesDir)) {
-			fs.mkdirSync(resourcesDir);
-		}
+		fs.existsSync(resourcesDir) || fs.mkdirSync(resourcesDir);
 		JSON.parse(spawnSync(scriptFiles.getJsonResources, [id.toString()], childOptions).stdout)
 			.Data
 			.forEach(({Id, Link, Name}) => {
