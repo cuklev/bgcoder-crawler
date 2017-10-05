@@ -14,6 +14,7 @@ function absolutePath(...args) {
 
 const stageFiles = Object.freeze({
 	cookieJar: absolutePath('downloaded', 'cookie-jar'),
+	categories: absolutePath('downloaded', 'categories'),
 	contestsJson: absolutePath('downloaded', 'kendo-contests.json'),
 	problemsInContestDir: absolutePath('downloaded', 'problems-in-contest'),
 	contestsDir: absolutePath('downloaded', 'contests'),
@@ -47,16 +48,30 @@ const runStage = (() => {
 runStage(stageFiles.cookieJar, [scriptFiles.auth]);
 
 const categoryPath = new Map;
-(function sub(path, id) {
-	console.log(`Category ${id || '(none)'} (${path})`);
-	const args = [];
-	if(typeof id === 'number') {
-		args.push(id.toString());
-		categoryPath.set(id, path);
-	}
-	JSON.parse(spawnSync(scriptFiles.getSubcategories, args, childOptions).stdout)
-		.forEach(cat => sub(`${path}/${cat.Name.replace(/\//g, '_')}`, cat.id));
-})('.');
+if(!fs.existsSync(stageFiles.categories)) {
+	(function sub(path, id) {
+		console.log(`Category ${id || '(none)'} (${path})`);
+		const args = [];
+		if(typeof id === 'number') {
+			args.push(id.toString());
+			categoryPath.set(id, path);
+		}
+		JSON.parse(spawnSync(scriptFiles.getSubcategories, args, childOptions).stdout)
+			.forEach(cat => sub(`${path}/${cat.Name.replace(/\//g, '_')}`, cat.id));
+	})('.');
+
+	// Save categories
+	fs.writeFileSync(stageFiles.categories, [...categoryPath.entries()]
+			.map(([id, path]) => `${id}:${path}`)
+			.join('\n'));
+} else {
+	console.log('Loading saved categories');
+
+	fs.readFileSync(stageFiles.categories, 'utf-8')
+		.split('\n')
+		.map(x => x.split(/:/))
+		.forEach(([id, path]) => id && categoryPath.set(+id, path));
+}
 
 runStage(stageFiles.contestsJson, [scriptFiles.getJsonContests, stageFiles.contestsJson]);
 
