@@ -76,7 +76,7 @@ if(!fs.existsSync(stageFiles.categories)) {
 }
 
 console.log('Downloading contests JSON...');
-fs.existsSync(stageFile.contestsJson) || spawnSync(scriptFiles.getJsonContests, [stageFiles.contestsJson], childOptions);
+fs.existsSync(stageFiles.contestsJson) || spawnSync(scriptFiles.getJsonContests, [stageFiles.contestsJson], childOptions);
 
 const contestsKendo = JSON.parse(fs.readFileSync(stageFiles.contestsJson, 'utf-8')).Data;
 const contestsCount = contestsKendo.length;
