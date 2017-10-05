@@ -6,26 +6,26 @@
 const fs = require('fs');
 const path = require('path')
 
-const {execSync, spawnSync} = require('child_process');
+const {spawnSync} = require('child_process');
 
-function absolutePath(x) {
-	return path.join(__dirname + x);
+function absolutePath(...args) {
+	return path.join(__dirname, ...args);
 }
 
 const stageFiles = Object.freeze({
-	cookieJar: absolutePath('downloaded/cookie-jar'),
-	contestsJson: absolutePath('downloaded/kendo-contests.json'),
-	problemsInContestDir: absolutePath('downloaded/problems-in-contest'),
-	contestsDir: absolutePath('downloaded/contests'),
+	cookieJar: absolutePath('downloaded', 'cookie-jar'),
+	contestsJson: absolutePath('downloaded', 'kendo-contests.json'),
+	problemsInContestDir: absolutePath('downloaded', 'problems-in-contest'),
+	contestsDir: absolutePath('downloaded', 'contests'),
 });
 
 const scriptFiles = Object.freeze({
-	auth: absolutePath('./scripts/auth.sh'),
-	getSubcategories: absolutePath('./scripts/get_subcategories.sh'),
-	getJsonContests: absolutePath('./scripts/get_json_contests.sh'),
-	getJsonProblems: absolutePath('./scripts/get_json_problems.sh'),
-	getJsonResources: absolutePath('./scripts/get_json_resources.sh'),
-	downloadTests: absolutePath('./scripts/download_tests.sh'),
+	auth: absolutePath('scripts', 'auth.sh'),
+	getSubcategories: absolutePath('scripts', 'get_subcategories.sh'),
+	getJsonContests: absolutePath('scripts', 'get_json_contests.sh'),
+	getJsonProblems: absolutePath('scripts', 'get_json_problems.sh'),
+	getJsonResources: absolutePath('scripts', 'get_json_resources.sh'),
+	downloadTests: absolutePath('scripts', 'download_tests.sh'),
 });
 
 const childOptions = Object.freeze({
@@ -48,12 +48,12 @@ runStage(stageFiles.cookieJar, [scriptFiles.auth]);
 const categoryPath = new Map;
 (function sub(path, id) {
 	console.log(`Category ${id || '(none)'} (${path})`);
-	let cmd = scriptFiles.getSubcategories;
+	const args = [];
 	if(typeof id === 'number') {
-		cmd = `${cmd} ${id}`;
+		args.push(id.toString());
 		categoryPath.set(id, path);
 	}
-	JSON.parse(execSync(cmd, childOptions).toString())
+	JSON.parse(spawnSync(scriptFiles.getSubcategories, args, childOptions).stdout)
 		.forEach(cat => sub(`${path}/${cat.Name.replace(/\//g, '_')}`, cat.id));
 })('.');
 
@@ -94,7 +94,7 @@ for(const i in contestsKendo) {
 		if(!fs.existsSync(resourcesList)) {
 			fs.writeFileSync(
 				resourcesList,
-				JSON.parse(execSync(`${scriptFiles.getJsonResources} ${id}`, childOptions))
+				JSON.parse(spawnSync(scriptFiles.getJsonResources, [id.toString()], childOptions).stdout)
 					.Data
 					.map(({Id, Link, Name}) => `${Name}:` + (Link ? Link : `${childOptions.env.OJS_URL}/Administration/Resources/Download/${Id}`))
 					.concat('')
