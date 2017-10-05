@@ -4,20 +4,35 @@
 'use strict';
 
 const fs = require('fs');
+const path = require('path')
+
 const {execSync, spawnSync} = require('child_process');
+
+function absolutePath(x) {
+	return path.join(__dirname + x);
+}
+
+const stageFiles = Object.freeze({
+	cookieJar: absolutePath('downloaded/cookie-jar'),
+	contestsJson: absolutePath('downloaded/kendo-contests.json'),
+	problemsInContestDir: absolutePath('downloaded/problems-in-contest'),
+	contestsDir: absolutePath('downloaded/contests'),
+});
+
+const scriptFiles = Object.freeze({
+	auth: absolutePath('./scripts/auth.sh'),
+	getSubcategories: absolutePath('./scripts/get_subcategories.sh'),
+	getJsonContests: absolutePath('./scripts/get_json_contests.sh'),
+	getJsonProblems: absolutePath('./scripts/get_json_problems.sh'),
+	getJsonResources: absolutePath('./scripts/get_json_resources.sh'),
+	downloadTests: absolutePath('./scripts/download_tests.sh'),
+});
 
 const childOptions = Object.freeze({
 	env: {
-		COOKIE_JAR: process.env.COOKIE_JAR || 'downloaded/cookie-jar',
+		COOKIE_JAR: process.env.COOKIE_JAR || stageFiles.cookieJar,
 		OJS_URL: process.env.OJS_URL || 'http://bgcoder.com',
 	}
-});
-
-const stageFiles = Object.freeze({
-	cookieJar: childOptions.env.COOKIE_JAR,
-	contestsJson: 'downloaded/kendo-contests.json',
-	problemsInContestDir: 'downloaded/problems-in-contest',
-	contestsDir: 'downloaded/contests',
 });
 
 const runStage = (() => {
@@ -28,12 +43,12 @@ const runStage = (() => {
 	return (target, [cmd, ...args]) => fs.existsSync(target) || spawnSync(cmd, args, options);
 })();
 
-runStage(stageFiles.cookieJar, ['./scripts/auth.sh']);
+runStage(stageFiles.cookieJar, [scriptFiles.auth]);
 
 const categoryPath = new Map;
 (function sub(path, id) {
 	console.log(`Category ${id || '(none)'} (${path})`);
-	let cmd = `./scripts/get_subcategories.sh`;
+	let cmd = scriptFiles.getSubcategories;
 	if(typeof id === 'number') {
 		cmd = `${cmd} ${id}`;
 		categoryPath.set(id, path);
@@ -42,7 +57,7 @@ const categoryPath = new Map;
 		.forEach(cat => sub(`${path}/${cat.Name.replace(/\//g, '_')}`, cat.id));
 })('.');
 
-runStage(stageFiles.contestsJson, ['./scripts/get_json_contests.sh', stageFiles.contestsJson]);
+runStage(stageFiles.contestsJson, [scriptFiles.getJsonContests, stageFiles.contestsJson]);
 
 const contestsKendo = JSON.parse(fs.readFileSync(stageFiles.contestsJson, 'utf-8')).Data;
 const contestsCount = contestsKendo.length;
@@ -63,7 +78,7 @@ for(const i in contestsKendo) {
 	const filename = `${stageFiles.problemsInContestDir}/${id}.json`;
 
 	console.log(`Contest ${+i + 1}/${contestsCount} - ${id} (${name})`);
-	runStage(filename, ['./scripts/get_json_problems.sh', id, filename]);
+	runStage(filename, [scriptFiles.getJsonProblems, id, filename]);
 	const problemsKendo = JSON.parse(fs.readFileSync(filename, 'utf-8'));
 	for(const problem of problemsKendo) {
 		const id = problem.Id;
@@ -73,13 +88,13 @@ for(const i in contestsKendo) {
 		const tests = `${problemDir}/tests.zip`;
 
 		console.log(`- ${id} (${name})`);
-		runStage(tests, ['./scripts/download_tests.sh', id, tests]);
+		runStage(tests, [scriptFiles.downloadTests, id, tests]);
 
 		const resourcesList = `${problemDir}/resources.list`;
 		if(!fs.existsSync(resourcesList)) {
 			fs.writeFileSync(
 				resourcesList,
-				JSON.parse(execSync(`./scripts/get_resources_json.sh ${id}`, childOptions))
+				JSON.parse(execSync(`${scriptFiles.getJsonResources} ${id}`, childOptions))
 					.Data
 					.map(({Id, Link, Name}) => `${Name}:` + (Link ? Link : `${childOptions.env.OJS_URL}/Administration/Resources/Download/${Id}`))
 					.concat('')
