@@ -93,7 +93,10 @@ for(const i in contestsKendo) {
 
 	contest.Name = contest.Name.replace(/\//g, '_');
 	const name = contest.Name;
-	const contestDir = path.join(stageFiles.contestsDir, categoryPath.get(contest.CategoryId), name);
+	const catPath = contest.CategoryId === 84 // hardcoded out of hierarchy category, probable location:
+		? './Bulgarian Competitions/Bulgarian Olympiad/Bulgarian Olympiad 2017/BNOI 2017 - Round 1'
+		: categoryPath.get(contest.CategoryId); // categoryPath Map works
+	const contestDir = path.join(stageFiles.contestsDir, catPath, name);
 	const filename = path.join(stageFiles.problemsInContestDir, `${id}.json`);
 
 	console.log(`Contest ${+i + 1}/${contestsCount} - ${id} (${name})`);
