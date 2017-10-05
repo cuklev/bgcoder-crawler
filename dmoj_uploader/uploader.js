@@ -9,14 +9,13 @@ const {spawnSync} = require('child_process');
 
 const childOptions = Object.freeze({
 	env: {
-		COOKIE_JAR: process.env.COOKIE_JAR || 'downloaded/cookie-jar',
+		COOKIE_JAR: process.env.COOKIE_JAR || 'cookie-jar',
 		DMOJ_URL: process.env.DMOJ_URL || 'http://localhost:8081',
 	},
 	encoding: 'utf-8',
 });
 
 const files = Object.freeze({
-	cookieJar: './cookie-jar',
 	authScript: './scripts/auth.sh',
 	addGroupTypeScript: './scripts/add_group_type.sh',
 	addProblemScript: './scripts/add_problem.sh',
@@ -25,7 +24,8 @@ const files = Object.freeze({
 
 
 // authentication
-fs.existsSync(files.cookieJar) || spawnSync(files.authScript, [], {stdio: [0, 1, 2], env: childOptions.env});
+console.log('Authenticating...');
+spawnSync(files.authScript, [], {stdio: [0, 1, 2], env: childOptions.env});
 
 
 // add groups and types
