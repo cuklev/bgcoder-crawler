@@ -61,14 +61,14 @@ function paramParser(output) {
 	return result;
 }
 
-function* getAllFilesRecursive(dir, file = '') {
+function* findAllProblems(dir, file = '') {
 	const fullName = path.join(dir, file);
 
 	if(fs.statSync(fullName).isDirectory()) {
 		for(const x of fs.readdirSync(fullName)) {
-			yield* getAllFilesRecursive(fullName, x);
+			yield* findAllProblems(fullName, x);
 		}
-	} else {
+	} else if(file === 'problem.params') {
 		yield { dir, file };
 	}
 }
@@ -76,23 +76,23 @@ function* getAllFilesRecursive(dir, file = '') {
 const categoryMap = require('./categoryMap');
 
 const base = '../bgcoder/downloaded/contests';
-[...getAllFilesRecursive(base)]
-	.filter(x => x.file === 'problem.params')
+[...findAllProblems(base)]
 	.forEach((x, index, all) => {
 		console.log(`Uploading ${index + 1}/${all.length}`);
 
 		const paramsFile = path.join(x.dir, x.file);
-		const resourcesFile = path.join(x.dir, 'resources.list');
+		const resourcesDir = path.join(x.dir, 'resources');
 
 		const contestId = paramParser(fs.readFileSync(path.join(x.dir, '..', 'contest.params'), UTF8)).get('Id'); // Ugly
 		const problemParams = paramParser(fs.readFileSync(paramsFile, UTF8));
-		const problemResources = paramParser(fs.readFileSync(resourcesFile, UTF8));
 
 //		const categories = x.dir
 //			.substring(base.length + 1) // remove base
 //			.split(/\//g)
 //			.map(categoryMap.map)
 //			.join('');
+
+		// TODO: Find the best resource for description here
 
 		// do upload here
 
