@@ -83,8 +83,8 @@ const base = '../bgcoder/downloaded/contests';
 		const paramsFile = path.join(x.dir, x.file);
 		const resourcesDir = path.join(x.dir, 'resources');
 
-		const contestId = paramParser(fs.readFileSync(path.join(x.dir, '..', 'contest.params'), UTF8)).get('Id'); // Ugly
-		const problemParams = paramParser(fs.readFileSync(paramsFile, UTF8));
+		const contestId = paramParser(fs.readFileSync(path.join(x.dir, '..', 'contest.params'), 'utf-8')).get('Id'); // Ugly
+		const problemParams = paramParser(fs.readFileSync(paramsFile, 'utf-8'));
 
 //		const categories = x.dir
 //			.substring(base.length + 1) // remove base
@@ -95,7 +95,6 @@ const base = '../bgcoder/downloaded/contests';
 		// TODO: Find the best resource for description here
 
 		// do upload here
-
 		spawnSync(files.addProblemScript, [
 				`bgcoder${contestId}p${problemParams.get('Id')}`,   // problem id
 				problemParams.get('Name'),                          // problem name
