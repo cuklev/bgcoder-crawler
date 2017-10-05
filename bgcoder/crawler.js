@@ -36,16 +36,9 @@ const childOptions = Object.freeze({
 	}
 });
 
-const runStage = (() => {
-	const options = {
-		stdio: [0, 1, 2],
-		env: childOptions.env,
-	};
-	return (cmd, ...args) => spawnSync(cmd, args, options);
-})();
-
 console.log('Authenticating...');
-runStage(scriptFiles.auth);
+// script prompts for credentials
+spawnSync(scriptFiles.auth, [], {stdio: 'inherit', env: childOptions.env});
 
 const categoryPath = new Map;
 if(!fs.existsSync(stageFiles.categories)) {
@@ -74,7 +67,7 @@ if(!fs.existsSync(stageFiles.categories)) {
 }
 
 console.log('Downloading contests JSON');
-runStage(scriptFiles.getJsonContests, stageFiles.contestsJson);
+spawnSync(scriptFiles.getJsonContests, [stageFiles.contestsJson], childOptions);
 
 const contestsKendo = JSON.parse(fs.readFileSync(stageFiles.contestsJson, 'utf-8')).Data;
 const contestsCount = contestsKendo.length;
@@ -95,7 +88,7 @@ for(const i in contestsKendo) {
 	const filename = path.join(stageFiles.problemsInContestDir, `${id}.json`);
 
 	console.log(`Contest ${+i + 1}/${contestsCount} - ${id} (${name})`);
-	runStage(scriptFiles.getJsonProblems, id, filename);
+	spawnSync(scriptFiles.getJsonProblems, [id, filename], childOptions);
 	const problemsKendo = JSON.parse(fs.readFileSync(filename, 'utf-8'));
 	for(const problem of problemsKendo) {
 		const id = problem.Id;
@@ -105,7 +98,7 @@ for(const i in contestsKendo) {
 		const tests = path.join(problemDir, 'tests.zip');
 
 		console.log(`- ${id} (${name})`);
-		runStage(scriptFiles.downloadTests, id, tests);
+		spawnSync(scriptFiles.downloadTests, [id, tests], childOptions);
 
 		const resourcesDir = path.join(problemDir, 'resources');
 		if(!fs.existsSync(resourcesDir)) {
