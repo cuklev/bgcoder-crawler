@@ -110,17 +110,21 @@ for(const i in contestsKendo) {
 		fs.existsSync(testsZip) || spawnSync(scriptFiles.downloadTests, [id, testsZip], childOptions);
 
 		const resourcesDir = path.join(problemDir, 'resources');
+		const resourcesReady = path.join(resourcesDir, '.done');
 		fs.existsSync(resourcesDir) || fs.mkdirSync(resourcesDir);
-		JSON.parse(spawnSync(scriptFiles.getJsonResources, [id.toString()], childOptions).stdout)
-			.Data
-			.forEach(({Id, Link, Name}) => {
-				if(Link) {
-					const filename = path.join(resourcesDir, `${Name}.link`)
-					fs.writeFileSync(filename, Link);
-				} else {
-					spawnSync(scriptFiles.downloadResource, [`${childOptions.env.OJS_URL}/Administration/Resources/Download/${Id}`, resourcesDir], childOptions);
-				}
-			});
+		if(!fs.existsSync(resourcesReady)) {
+			JSON.parse(spawnSync(scriptFiles.getJsonResources, [id.toString()], childOptions).stdout)
+				.Data
+				.forEach(({Id, Link, Name}) => {
+					if(Link) {
+						const filename = path.join(resourcesDir, `${Name}.link`)
+						fs.writeFileSync(filename, Link);
+					} else {
+						spawnSync(scriptFiles.downloadResource, [`${childOptions.env.OJS_URL}/Administration/Resources/Download/${Id}`, resourcesDir], childOptions);
+					}
+				});
+			fs.writeFileSync(resourcesReady, '');
+		}
 
 		const problemParams = path.join(problemDir, 'problem.params');
 		if(!fs.existsSync(problemParams)) {
