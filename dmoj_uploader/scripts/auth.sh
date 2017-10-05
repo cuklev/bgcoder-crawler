@@ -1,7 +1,5 @@
 #!/bin/bash
 
-[[ ${DMOJ_URL:="http://localhost:8081"} ]]
-[[ ${COOKIE_JAR:="cookie-jar"} ]]
 LOGIN_URL="$DMOJ_URL/accounts/login/?next=/"
 
 printf "Username: "
@@ -11,7 +9,7 @@ read -rs password
 echo
 
 CSRF_SCRIPT="$(dirname "$0")/csrf.sh"
-csrf="$("$CSRF_SCRIPT" "$LOGIN_URL" "$COOKIE_JAR")"
+csrf="$("$CSRF_SCRIPT")"
 
 curl -s "$LOGIN_URL" \
 	-b "$COOKIE_JAR" -c "$COOKIE_JAR" \

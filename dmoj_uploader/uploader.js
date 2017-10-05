@@ -7,6 +7,14 @@ const fs = require('fs');
 const path = require('path');
 const {spawnSync} = require('child_process');
 
+const childOptions = Object.freeze({
+	env: {
+		COOKIE_JAR: process.env.COOKIE_JAR || 'downloaded/cookie-jar',
+		DMOJ_URL: process.env.DMOJ_URL || 'http://localhost:8081',
+	},
+	encoding: 'utf-8',
+});
+
 const files = Object.freeze({
 	cookieJar: './cookie-jar',
 	authScript: './scripts/auth.sh',
@@ -17,7 +25,7 @@ const files = Object.freeze({
 
 
 // authentication
-fs.existsSync(files.cookieJar) || spawnSync(files.authScript, [], {stdio: [0, 1, 2]});
+fs.existsSync(files.cookieJar) || spawnSync(files.authScript, [], {stdio: [0, 1, 2], env: childOptions.env});
 
 
 // add groups and types
@@ -34,9 +42,8 @@ function idParser(output) {
 	return result;
 }
 
-const UTF8 = Object.freeze({encoding: 'utf-8'});
 const [groupIdMap, typeIdMap] = ['group', 'type']
-	.map(x => spawnSync(files.listScript, [x], UTF8))
+	.map(x => spawnSync(files.listScript, [x], childOptions))
 	.map(x => idParser(x.output[1]));
 
 function paramParser(output) {
@@ -94,7 +101,7 @@ const base = '../bgcoder/downloaded/contests';
 				(problemParams.get('MemoryLimit') / 1024 | 0) + '', // memory limit KB
 				'1',                                                // group id
 				'1 2',                                              // type ids
-			]);
+			], childOptions);
 	});
 
 

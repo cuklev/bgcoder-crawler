@@ -6,7 +6,7 @@
 const fs = require('fs');
 const {execSync, spawnSync} = require('child_process');
 
-const childEnv = Object.freeze({
+const childOptions = Object.freeze({
 	env: {
 		COOKIE_JAR: process.env.COOKIE_JAR || 'downloaded/cookie-jar',
 		OJS_URL: process.env.OJS_URL || 'http://bgcoder.com',
@@ -14,7 +14,7 @@ const childEnv = Object.freeze({
 });
 
 const stageFiles = Object.freeze({
-	cookieJar: childEnv.env.COOKIE_JAR,
+	cookieJar: childOptions.env.COOKIE_JAR,
 	contestsJson: 'downloaded/kendo-contests.json',
 	problemsInContestDir: 'downloaded/problems-in-contest',
 	contestsDir: 'downloaded/contests',
@@ -23,7 +23,7 @@ const stageFiles = Object.freeze({
 const runStage = (() => {
 	const options = {
 		stdio: [0, 1, 2],
-		env: childEnv.env,
+		env: childOptions.env,
 	};
 	return (target, [cmd, ...args]) => fs.existsSync(target) || spawnSync(cmd, args, options);
 })();
@@ -38,7 +38,7 @@ const categoryPath = new Map;
 		cmd = `${cmd} ${id}`;
 		categoryPath.set(id, path);
 	}
-	JSON.parse(execSync(cmd, childEnv).toString())
+	JSON.parse(execSync(cmd, childOptions).toString())
 		.forEach(cat => sub(`${path}/${cat.Name.replace(/\//g, '_')}`, cat.id));
 })('.');
 
@@ -79,9 +79,9 @@ for(const i in contestsKendo) {
 		if(!fs.existsSync(resourcesList)) {
 			fs.writeFileSync(
 				resourcesList,
-				JSON.parse(execSync(`./scripts/get_resources_json.sh ${id}`, childEnv))
+				JSON.parse(execSync(`./scripts/get_resources_json.sh ${id}`, childOptions))
 					.Data
-					.map(({Id, Link, Name}) => `${Name}:` + (Link ? Link : `${childEnv.env.OJS_URL}/Administration/Resources/Download/${Id}`))
+					.map(({Id, Link, Name}) => `${Name}:` + (Link ? Link : `${childOptions.env.OJS_URL}/Administration/Resources/Download/${Id}`))
 					.concat('')
 					.join('\n'));
 		}

@@ -9,13 +9,10 @@ MEMORY_LIMIT="$6"
 GROUP_ID="$7"
 TYPE_IDS="$8"
 
-[[ ${DMOJ_URL:="http://localhost:8081"} ]]
-[[ ${COOKIE_JAR:="cookie-jar"} ]]
-
 URL="$DMOJ_URL/admin/judge/problem/add/"
 
 CSRF_SCRIPT="$(dirname "$0")/csrf.sh"
-csrf="$("$CSRF_SCRIPT" "$URL" "$COOKIE_JAR")"
+csrf="$("$CSRF_SCRIPT")"
 
 curl -s "$URL" \
 	-b "$COOKIE_JAR" \

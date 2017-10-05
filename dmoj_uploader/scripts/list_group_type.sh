@@ -2,9 +2,6 @@
 
 GROUP_OR_TYPE="$1"
 
-[[ ${DMOJ_URL:="http://localhost:8081"} ]]
-[[ ${COOKIE_JAR:="cookie-jar"} ]]
-
 case "$GROUP_OR_TYPE" in
 	group) URL="$DMOJ_URL/admin/judge/problemgroup/" ;;
 	type) URL="$DMOJ_URL/admin/judge/problemtype/" ;;
