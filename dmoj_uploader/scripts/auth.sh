@@ -8,6 +8,8 @@ check_good_cookie() {
 		| grep -q "200 OK"
 }
 
+mkdir -p "$(dirname "$COOKIE_JAR")"
+
 while ! check_good_cookie; do
 	printf "Username: "
 	read username

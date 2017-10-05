@@ -7,19 +7,23 @@ const fs = require('fs');
 const path = require('path');
 const {spawnSync} = require('child_process');
 
+function absolutePath(...args) {
+	return path.join(__dirname, ...args);
+}
+
+const files = Object.freeze({
+	authScript: absolutePath('scripts', 'auth.sh'),
+	addGroupTypeScript: absolutePath('scripts', 'add_group_type.sh'),
+	addProblemScript: absolutePath('scripts', 'add_problem.sh'),
+	listScript: absolutePath('scripts', 'list_group_type.sh'),
+});
+
 const childOptions = Object.freeze({
 	env: {
-		COOKIE_JAR: process.env.COOKIE_JAR || 'cookie-jar',
+		COOKIE_JAR: process.env.COOKIE_JAR || absolutePath('cookie-jar'),
 		DMOJ_URL: process.env.DMOJ_URL || 'http://localhost:8081',
 	},
 	encoding: 'utf-8',
-});
-
-const files = Object.freeze({
-	authScript: './scripts/auth.sh',
-	addGroupTypeScript: './scripts/add_group_type.sh',
-	addProblemScript: './scripts/add_problem.sh',
-	listScript: './scripts/list_group_type.sh',
 });
 
 
