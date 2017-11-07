@@ -4,7 +4,7 @@ LOGIN_URL="$DMOJ_URL/accounts/login/?next=/"
 
 check_good_cookie() {
 	[[ ! -f "$COOKIE_JAR" ]] && return 1
-	curl -s -I "$DMOJ_URL/admin/" -b "$COOKIE_JAR" \
+	curl -s -I "$DMOJ_URL/" -b "$COOKIE_JAR" \
 		| grep -q "200 OK"
 }
 
@@ -18,7 +18,7 @@ while ! check_good_cookie; do
 	echo
 
 	CSRF_SCRIPT="$(dirname "$0")/csrf.sh"
-	csrf="$("$CSRF_SCRIPT")"
+	csrf="$("$CSRF_SCRIPT" "$LOGIN_URL")"
 
 	curl -s "$LOGIN_URL" \
 		-b "$COOKIE_JAR" -c "$COOKIE_JAR" \

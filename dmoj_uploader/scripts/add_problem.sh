@@ -12,7 +12,7 @@ TYPE_IDS="$8"
 URL="$DMOJ_URL/admin/judge/problem/add/"
 
 CSRF_SCRIPT="$(dirname "$0")/csrf.sh"
-csrf="$("$CSRF_SCRIPT")"
+csrf="$("$CSRF_SCRIPT" "$URL")"
 
 curl -s "$URL" \
 	-b "$COOKIE_JAR" \

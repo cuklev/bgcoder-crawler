@@ -13,7 +13,7 @@ case "$GROUP_OR_TYPE" in
 esac
 
 CSRF_SCRIPT="$(dirname "$0")/csrf.sh"
-csrf="$("$CSRF_SCRIPT")"
+csrf="$("$CSRF_SCRIPT" "$URL")"
 
 curl -s "$URL" \
 	-b "$COOKIE_JAR" \
