@@ -94,7 +94,6 @@ const base = '../bgcoder/downloaded/contests';
 //			.join('');
 
 		const description = spawnSync(files.getMeDescriptionScript, [resourcesDir], {encoding: childOptions.encoding}).stdout;
-		console.log(description);
 
 		// do upload here
 		spawnSync(files.addProblemScript, [
