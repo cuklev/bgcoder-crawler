@@ -16,6 +16,7 @@ const files = Object.freeze({
 	addGroupTypeScript: absolutePath('scripts', 'add_group_type.sh'),
 	addProblemScript: absolutePath('scripts', 'add_problem.sh'),
 	listScript: absolutePath('scripts', 'list_group_type.sh'),
+	getMeDescriptionScript: absolutePath('scripts', 'get_me_description.sh'),
 });
 
 const childOptions = Object.freeze({
@@ -92,13 +93,13 @@ const base = '../bgcoder/downloaded/contests';
 //			.map(categoryMap.map)
 //			.join('');
 
-		// TODO: Find the best resource for description here
+		const description = spawnSync(files.getMeDescriptionScript, [resourcesDir], {stdio: [0, 1, 2], encoding: childOptions.encoding});
 
 		// do upload here
 		spawnSync(files.addProblemScript, [
 				`bgcoder${contestId}p${problemParams.get('Id')}`,   // problem id
 				problemParams.get('Name'),                          // problem name
-				'description',                                      // description
+				description,                                        // description
 				problemParams.get('MaximumPoints'),                 // points
 				(problemParams.get('TimeLimit') / 1000) + '',       // time limit ms
 				(problemParams.get('MemoryLimit') / 1024 | 0) + '', // memory limit KB

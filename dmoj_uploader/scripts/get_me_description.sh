@@ -1,8 +1,7 @@
 #!/bin/bash
 
-PROBLEM_DIR="$1"
-cd "$PROBLEM_DIR"
-cd resources
+RESOURCES_DIR="$1"
+pushd "$RESOURCES_DIR" > /dev/null
 
 md_file() {
 	local file="$(find -iname \*.md | head -n1)"
@@ -55,10 +54,31 @@ docx_file() {
 	fi
 }
 
+rtf_file() {
+	local file="$(find -iname \*.rtf | head -n1)"
+	if [[ "$file" != "" ]]; then
+		lowriter --convert-to odt "$file" &> /dev/null
+		odt_file
+		exit
+	fi
+}
+
+zip_file() {
+	local file="$(find -iname \*.zip | head -n1)"
+	if [[ "$file" != "" ]]; then
+		rm -rf unzipped
+		unzip "$file" -d unzipped
+		popd > /dev/null
+		exec "$0" "$RESOURCES_DIR"/unzipped
+	fi
+}
+
 md_file
 html_file
 link_file
 docx_file
 doc_file
+rtf_file
+zip_file
 
 exit 1
