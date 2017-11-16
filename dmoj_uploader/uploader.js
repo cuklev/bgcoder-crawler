@@ -93,7 +93,8 @@ const base = '../bgcoder/downloaded/contests';
 //			.map(categoryMap.map)
 //			.join('');
 
-		const description = spawnSync(files.getMeDescriptionScript, [resourcesDir], {stdio: [0, 1, 2], encoding: childOptions.encoding});
+		const description = spawnSync(files.getMeDescriptionScript, [resourcesDir], {encoding: childOptions.encoding}).stdout;
+		console.log(description);
 
 		// do upload here
 		spawnSync(files.addProblemScript, [
@@ -104,7 +105,7 @@ const base = '../bgcoder/downloaded/contests';
 				(problemParams.get('TimeLimit') / 1000) + '',       // time limit ms
 				(problemParams.get('MemoryLimit') / 1024 | 0) + '', // memory limit KB
 				'1',                                                // group id
-				'1 2',                                              // type ids
+				'1',                                                // type ids
 			], childOptions);
 	});
 

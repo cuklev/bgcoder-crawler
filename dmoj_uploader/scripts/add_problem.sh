@@ -44,6 +44,15 @@ curl -s "$URL" \
 	--form "allowed_languages=6" \
 	--form "allowed_languages=7" \
 	--form "allowed_languages=8" \
+	--form "allowed_languages=9" \
+	--form "allowed_languages=10" \
+	--form "allowed_languages=11" \
+	--form "allowed_languages=12" \
+	--form "allowed_languages=13" \
+	--form "allowed_languages=14" \
+	--form "allowed_languages=15" \
+	--form "allowed_languages=16" \
+	--form "allowed_languages=17" \
 	--form "allowed_languages_all=on" \
 	--form "change_message=" \
 	--form "language_limits-TOTAL_FORMS=3" \
