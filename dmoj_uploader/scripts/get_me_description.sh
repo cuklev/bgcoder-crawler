@@ -81,4 +81,6 @@ doc_file
 rtf_file
 zip_file
 
+# TODO: pdf files
+
 exit 1
