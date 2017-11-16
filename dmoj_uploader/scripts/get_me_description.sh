@@ -76,6 +76,7 @@ zip_file() {
 md_file
 html_file
 link_file
+odt_file
 docx_file
 doc_file
 rtf_file
