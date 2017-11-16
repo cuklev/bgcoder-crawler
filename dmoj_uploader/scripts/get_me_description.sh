@@ -3,28 +3,26 @@
 PROBLEM_DIR="$1"
 cd "$PROBLEM_DIR"
 
-if [[ "$2" == "list" ]]; then
-	find -type d -name resources -print0 \
-		| xargs -n 1 -0 ls \
-		| sed '/\.link$/!s/Resource-[0-9]*-//' \
-		| sort -u
+cd resources
 
-	exit 0
-fi
-
-narrow() {
-	local candidates=("$@")
-	local description=()
-
-	case ${#description[*]} in
-		0) return 1;; # No valid description
-		1) echo "${description[0]}" # valid description
-			return 0;;
-	esac
-
-	# TODO: Find the best
-	echo "${description[@]}"
+md_file() {
+	local file="$(find -iname \*.md | head -n1)"
+	if [[ "$md_file" != "" ]]; then
+		cat "$md_file"
+		exit
+	fi
 }
 
+link_file() {
+	local file="$(find -name \*.link | head -n1)"
+	if [[ "$file" != "" ]]; then
+		local link="$(cat "$file")"
+		echo "<a href=\"$link\">Link to description</a>"
+		exit
+	fi
+}
 
-narrow *
+md_file
+link_file
+
+exit 0
