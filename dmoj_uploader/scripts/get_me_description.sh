@@ -63,6 +63,14 @@ rtf_file() {
 	fi
 }
 
+pdf_file() {
+	local file="$(find -iname \*.pdf | head -n1)"
+	if [[ "$file" != "" ]]; then
+		pdftohtml -nodrm -q -p -s "$file" DESC
+		rm DESCS.html
+	fi
+}
+
 zip_file() {
 	local file="$(find -iname \*.zip | head -n1)"
 	if [[ "$file" != "" ]]; then
@@ -80,8 +88,7 @@ odt_file
 docx_file
 doc_file
 rtf_file
+pdf_file
 zip_file
-
-# TODO: pdf files
 
 exit 1
