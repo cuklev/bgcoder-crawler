@@ -67,7 +67,9 @@ pdf_file() {
 	local file="$(find -iname \*.pdf | head -n1)"
 	if [[ "$file" != "" ]]; then
 		pdftohtml -nodrm -q -p -s "$file" DESC
-		rm DESCS.html
+		rm -f DESCS.html
+		html_file
+		exit
 	fi
 }
 
